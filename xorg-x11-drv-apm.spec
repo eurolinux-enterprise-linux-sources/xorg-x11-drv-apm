@@ -5,41 +5,38 @@
 Summary:   Xorg X11 apm video driver
 Name:      xorg-x11-drv-apm
 Version: 1.2.5
-Release: 5%{?dist}
+Release: 10%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X Hardware Support
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 Source0:   ftp://ftp.x.org/pub/individual/driver/%{tarball}-%{version}.tar.bz2
-Source1:   apm.xinf
-
 ExcludeArch: s390 s390x
+Patch0:	    0001-Remove-include-mibstore.h.patch
+
+BuildRequires: xorg-x11-server-devel >= 1.10.99.902
 
 BuildRequires: autoconf automake libtool
-BuildRequires: xorg-x11-server-devel >= 1.10.99.902
+
 Requires:  Xorg %(xserver-sdk-abi-requires ansic)
 Requires:  Xorg %(xserver-sdk-abi-requires videodrv)
-Requires:  hwdata
 
 %description 
 X.Org X11 apm video driver.
 
 %prep
-
 %setup -q -n %{tarball}-%{version}
+%patch0 -p1 -b .mibstore
 
 %build
+autoreconf -vif
 %configure --disable-static
-make
+make %{?_smp_mflags}
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
 make install DESTDIR=$RPM_BUILD_ROOT
-
-mkdir -p $RPM_BUILD_ROOT%{_datadir}/hwdata/videoaliases
-install -m 0644 %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/hwdata/videoaliases/
 
 # FIXME: Remove all libtool archives (*.la) from modules directory.  This
 # should be fixed in upstream Makefile.am or whatever.
@@ -51,24 +48,83 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,-)
 %{driverdir}/apm_drv.so
-%{_datadir}/hwdata/videoaliases/apm.xinf
 %{_mandir}/man4/apm.4*
 
 %changelog
-* Tue Aug 29 2012 Jerome Glisse <jglisse@redhat.com> 1.2.5-5
-- upstream 1.2.5 release Resolves: #835216
+* Mon Apr 28 2014 Adam Jackson <ajax@redhat.com> - 1.2.5-10
+- Fix rhel arch list
 
-* Tue Aug 29 2012 Jerome Glisse <jglisse@redhat.com> 1.2.5-4
-- upstream 1.2.5 release Resolves: #835216
+* Sun Aug 04 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.2.5-9
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
 
-* Thu Jun 30 2011 Ben Skeggs <bskeggs@redhat.com> 1.2.3-2
-- rebuild against server 1.10
+* Thu Mar 07 2013 Dave Airlie <airlied@redhat.com> 1.2.5-8
+- bump for autoreconf - aarch64 support
 
-* Tue Jun 28 2011 Ben Skeggs <bskeggs@redhat.com> 1.2.3-1
-- upstream release 1.2.3
+* Thu Mar 07 2013 Peter Hutterer <peter.hutterer@redhat.com> - 1.2.5-7
+- require xorg-x11-server-devel, not -sdk
 
-* Mon Nov 30 2009 Dennis Gregorovic <dgregor@redhat.com> - 1.2.2-1.1
-- Rebuilt for RHEL 6
+* Thu Mar 07 2013 Peter Hutterer <peter.hutterer@redhat.com> - 1.2.5-6
+- ABI rebuild
+
+* Fri Feb 15 2013 Peter Hutterer <peter.hutterer@redhat.com> - 1.2.5-5
+- ABI rebuild
+
+* Fri Feb 15 2013 Peter Hutterer <peter.hutterer@redhat.com> - 1.2.5-4
+- ABI rebuild
+
+* Thu Jan 10 2013 Adam Jackson <ajax@redhat.com> - 1.2.5-3
+- ABI rebuild
+
+* Sun Jul 22 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.2.5-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
+* Tue Jul 17 2012 Dave Airlie <airlied@redhat.com> 1.2.5-1
+- upstream 1.2.5 release
+
+* Sat Feb 11 2012 Peter Hutterer <peter.hutterer@redhat.com> - 1.2.3-15
+- ABI rebuild
+
+* Fri Feb 10 2012 Peter Hutterer <peter.hutterer@redhat.com> - 1.2.3-14
+- ABI rebuild
+
+* Tue Jan 24 2012 Peter Hutterer <peter.hutterer@redhat.com> - 1.2.3-13
+- ABI rebuild
+
+* Wed Jan 04 2012 Peter Hutterer <peter.hutterer@redhat.com> - 1.2.3-12
+- Rebuild for server 1.12
+
+* Thu Dec 15 2011 Adam Jackson <ajax@redhat.com> 1.2.3-11
+- Drop xinf file
+
+* Wed Nov 16 2011 Adam Jackson <ajax@redhat.com> 1.2.3-10
+- apm-1.2.3-git.patch: sync with git for new ABI
+
+* Wed Nov 09 2011 Adam Jackson <ajax@redhat.com> - 1.2.3-9
+- ABI rebuild
+
+* Thu Aug 18 2011 Adam Jackson <ajax@redhat.com> - 1.2.3-8
+- Rebuild for xserver 1.11 ABI
+
+* Wed May 11 2011 Peter Hutterer <peter.hutterer@redhat.com> - 1.2.3-7
+- Rebuild for server 1.11
+
+* Mon Feb 28 2011 Peter Hutterer <peter.hutterer@redhat.com> - 1.2.3-6
+- Rebuild for server 1.10
+
+* Mon Feb 07 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.2.3-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
+* Thu Dec 02 2010 Peter Hutterer <peter.hutterer@redhat.com> - 1.2.3-4
+- Rebuild for server 1.10
+
+* Wed Dec 01 2010 Adam Williamson <awilliam@redhat.com> 1.2.3-3
+- rebuild for new X server
+
+* Wed Oct 27 2010 Adam Jackson <ajax@redhat.com> 1.2.3-2
+- Add ABI requires magic. (#542742)
+
+* Sun Jul 25 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.2.3-1
+- rebase to upstream release 1.2.3
 
 * Tue Aug 04 2009 Dave Airlie <airlied@redhat.com> 1.2.2-1
 - rebase to new upstream releae 1.2.2
