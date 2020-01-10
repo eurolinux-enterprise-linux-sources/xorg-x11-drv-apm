@@ -4,8 +4,8 @@
 
 Summary:   Xorg X11 apm video driver
 Name:      xorg-x11-drv-apm
-Version: 1.2.3
-Release: 2%{?dist}
+Version: 1.2.5
+Release: 5%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X Hardware Support
@@ -16,8 +16,8 @@ Source1:   apm.xinf
 
 ExcludeArch: s390 s390x
 
-BuildRequires: xorg-x11-server-sdk >= 1.3.0.0-6
-
+BuildRequires: autoconf automake libtool
+BuildRequires: xorg-x11-server-devel >= 1.10.99.902
 Requires:  Xorg %(xserver-sdk-abi-requires ansic)
 Requires:  Xorg %(xserver-sdk-abi-requires videodrv)
 Requires:  hwdata
@@ -55,6 +55,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man4/apm.4*
 
 %changelog
+* Tue Aug 29 2012 Jerome Glisse <jglisse@redhat.com> 1.2.5-5
+- upstream 1.2.5 release Resolves: #835216
+
+* Tue Aug 29 2012 Jerome Glisse <jglisse@redhat.com> 1.2.5-4
+- upstream 1.2.5 release Resolves: #835216
+
 * Thu Jun 30 2011 Ben Skeggs <bskeggs@redhat.com> 1.2.3-2
 - rebuild against server 1.10
 
